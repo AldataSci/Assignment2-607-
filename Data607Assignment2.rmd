@@ -1,0 +1,68 @@
+---
+title: "Data 607 Hw 2"
+author: "Al Haque"
+date: "2/9/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Intro:
+  I read a csv file from R and I wanted to learn some basic information on the data I collected from my friends. I was curious on the average rating of each movie my friends watched and what movies my friends didn't watched. After doing some data cleaning I then graphed the results on a bar graph. 
+
+
+
+### Reading a csv file to R  
+
+  I exported my sql data into a csv file and I placed the csv file on Github. I then made R read the csv file on Github and then I placed all that data into a data frame called Mysql. 
+
+```{r cars}
+library(tidyverse)
+mysql <- read.csv("https://raw.githubusercontent.com/AldataSci/Assignment2-607-/main/Homework2%5B607%5D.csv",header=TRUE,sep=",")
+```
+
+
+### Average Rating of Movies My Friends Watched
+  I removed all the null values from my data and I was curious to see what the average rating of each movie was between my friends 
+
+```{r}
+avg_mov <- mysql %>%
+  group_by(movie) %>%
+  filter(Stars != "NULL") %>%
+  summarise(avg= mean(as.integer(Stars)))
+avg_mov
+
+```
+
+  Here I graphed my data and not surprisingly Spider-Man was watched by all my friends and they also rated it very highly with a rating of 4.8
+
+```{r}
+library(ggplot2)
+ggplot(data=avg_mov, aes(x=movie,y=avg , fill=movie)) + 
+  coord_flip() +
+  geom_bar(stat="identity")
+```
+
+### Movies my Friends did not watched and how many didn't watch
+  I was curious to see which movies my friends did not watch so I aggregated the data by movie, I filtered the condition where the stars were null and I counted how many people did not see which movies. 4 of my friends did not watch No Time to Die and one of my friend did not watch dune.
+
+
+```{r}
+nul <- mysql %>%
+  group_by(movie) %>%
+  filter(Stars=="NULL") %>%
+  count(Stars,sort=TRUE)
+nul
+```
+
+  Here I graphed my results in another bar graph. 
+
+```{r}
+library(ggplot2)
+ggplot(data=nul,aes(x=movie,y=n,fill=movie)) +
+  geom_bar(stat="Identity")
+```
+
